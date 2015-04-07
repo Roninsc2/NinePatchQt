@@ -27,7 +27,7 @@ void TNinePatch::draw(QPainter& painter, int x, int y, int width, int height)
        if (height < image->height()) {
             throw new MyExceptionHeight;
        }
-       if ((resizeArea.width() +resizeArea.x()-1) != 0 && (resizeArea.height() +resizeArea.y()-1) != 0) {
+       if (resizeArea.width() != 0 && resizeArea.height() != 0) {
            painter.drawImage(x, y, *image, 1, 1,  resizeArea.x(), resizeArea.y());//верхний левый угол
 
            painter.drawImage(x, y + height -(image->height()-resizeArea.height()-resizeArea.y() ), *image, 1, (resizeArea.height() +resizeArea.y()-1),
