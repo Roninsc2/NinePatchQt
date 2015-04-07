@@ -15,10 +15,6 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
-<<<<<<< HEAD
-=======
-    QImage *image;
->>>>>>> 533a9e21650accefad0c6885186a33d84a8698a0
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
