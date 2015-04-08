@@ -7,17 +7,18 @@
 #include <QPoint>
 #include <QString>
 #include <exception>
+#include <string>
 
 class TNinePatch {
 public:
     TNinePatch(QString fileName);
     void draw(QPainter& painter, int x, int y, int width, int height);
     ~TNinePatch();
+    QRect GetContentArea(int widht, int height);
 
 private:
     QRect GetContentArea();
     QRect GetResizeArea();
-    QRect resizeContentArea(int resizeX, int resizeY);
     void drawScaledPart(QRect oldRect, QRect newRect, QPainter& painter);
 
 public:
@@ -30,31 +31,65 @@ private:
 };
 
 
-class MyExceptionWidth : public std::exception
+class NinePatchException : public std::exception
 {
-    virtual const char* what() const throw() {
-        return "Input incorrect width";
-    }
+
 };
 
-class MyExceptionWidthAndHeight : public std::exception
+class ExceptionIncorrectWidth : public NinePatchException
 {
-    virtual const char* what() const throw() {
-        return "Input incorrect width and height";
+public:
+    ExceptionIncorrectWidth(int imgW, int imgH) {
+        imgWidth = imgW;
+        imgHeight = imgH;
     }
+    virtual const char* what() const throw() {
+        std::string str = ("Input incorrect width. Mimimum width = " + std::to_string(imgWidth));
+        return str.c_str();
+    }
+public:
+    int imgWidth;
+    int imgHeight;
 };
 
-class MyExceptionHeight : public std::exception
+class ExceptionIncorrectWidthAndHeight : public NinePatchException
 {
-    virtual const char* what() const throw() {
-        return "Input incorrect height";
+public:
+    ExceptionIncorrectWidthAndHeight(int imgW,int imgH) {
+        imgWidth = imgW;
+        imgHeight = imgH;
     }
+
+    virtual const char* what() const throw() {
+        std::string str = ("Input incorrect width width and height. Minimum width = " + std::to_string(imgWidth)+ ". Minimum height = " + std::to_string(imgHeight));
+        return str.c_str();
+    }
+public:
+    int imgWidth;
+    int imgHeight;
 };
 
-class MyExceptionNot9Patch : public std::exception
+class ExceptionIncorrectHeight : public NinePatchException
+{
+public:
+    ExceptionIncorrectHeight(int imgW, int imgH) {
+        imgWidth = imgW;
+        imgHeight = imgH;
+    }
+
+    virtual const char* what() const throw() {
+        std::string str = ("Input incorrect heigh. Minimum height = " + std::to_string(imgHeight)) ;
+        return str.c_str();
+    }
+public:
+    int imgWidth;
+    int imgHeight;
+};
+
+class ExceptionNot9Patch : public NinePatchException
 {
     virtual const char* what() const throw() {
-        return "It is not nine patch image";
+        return ("It is not nine patch image");
     }
 };
 

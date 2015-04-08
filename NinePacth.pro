@@ -20,3 +20,5 @@ HEADERS  += widget.h \
     ninepatch.h
 
 FORMS    += widget.ui
+
+QMAKE_CXXFLAGS += -std=c++11 -Werror

@@ -22,8 +22,8 @@ void Widget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     try {
-        ninepatch->draw(painter, 10, 10, 100, 100);
-    } catch (std::exception* e) {
+        ninepatch->draw(painter, 10, 10, 300, 270);
+    } catch (NinePatchException* e) {
         std::cerr << e->what() << std::endl;
         delete e;
     }

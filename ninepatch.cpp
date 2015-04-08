@@ -19,15 +19,15 @@ void TNinePatch::draw(QPainter& painter, int x, int y, int width, int height)
 {
        contentArea = GetContentArea();
        if (width < image->width() && height < image->height()) {
-           throw new MyExceptionWidthAndHeight;
+           throw new ExceptionIncorrectWidthAndHeight(image->width(), image->height());
        }
        if (width < image->width()) {
-            throw new MyExceptionWidth;
+            throw new ExceptionIncorrectWidth(image->width(), image->height());
        }
        if (height < image->height()) {
-            throw new MyExceptionHeight;
+            throw new ExceptionIncorrectHeight(image->width(), image->height());
        }
-       if (resizeArea.width() != 0 && resizeArea.height() != 0) {
+       if ((resizeArea.width()+resizeArea.x()-1 != 0) && (resizeArea.height()+resizeArea.y()-1 != 0)) {
            painter.drawImage(x, y, *image, 1, 1,  resizeArea.x(), resizeArea.y());//верхний левый угол
 
            painter.drawImage(x, y + height -(image->height()-resizeArea.height()-resizeArea.y() ), *image, 1, (resizeArea.height() +resizeArea.y()-1),
@@ -66,16 +66,15 @@ void TNinePatch::draw(QPainter& painter, int x, int y, int width, int height)
                           QRect(resizeArea.x() + x, y+resizeArea.y(),
                           topResize , leftResize), painter);
        } else {
-           throw new MyExceptionNot9Patch;
+           throw new ExceptionNot9Patch;
        }
-       contentArea = resizeContentArea(width, height);
+       contentArea = GetContentArea(width, height);
 }
 
-QRect TNinePatch::resizeContentArea(int width, int height)
+QRect TNinePatch::GetContentArea(int width, int height)
 {
-    contentArea.setWidth( width - (image->width()-contentArea.width()));
-    contentArea.setHeight(height - (image->height()-contentArea.height()));
-    return (QRect(contentArea.x(), contentArea.y(), contentArea.width(), contentArea.height()));
+    return (QRect(contentArea.x(), contentArea.y(), (width - (image->width()-contentArea.width())),
+                  (height - (image->height()-contentArea.height()))));
 }
 
 void TNinePatch::drawScaledPart(QRect oldRect, QRect newRect, QPainter& painter)
