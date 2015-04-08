@@ -15,7 +15,6 @@ Widget::Widget(QWidget *parent) :
 Widget::~Widget()
 {
     delete ninepatch;
-    delete ui;
 }
 
 void Widget::paintEvent(QPaintEvent*)

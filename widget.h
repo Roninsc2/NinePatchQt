@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QFileDialog>
+#include <iostream>
 #include "ninepatch.h"
 
 namespace Ui {
@@ -21,7 +22,7 @@ public:
 private:
     TNinePatch * ninepatch;
     void paintEvent(QPaintEvent*);
-    Ui::Widget *ui;
+    QScopedPointer<Ui::Widget> ui;
 };
 
 #endif // WIDGET_H

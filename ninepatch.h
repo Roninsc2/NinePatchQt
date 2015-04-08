@@ -1,5 +1,4 @@
-#ifndef NINEPATCH
-#define NINEPATCH
+#pragma once
 
 #include <QScopedPointer>
 #include <QImage>
@@ -11,7 +10,7 @@
 
 class TNinePatch {
 public:
-    TNinePatch(QString fileName);
+    TNinePatch(const QString& fileName);
     void draw(QPainter& painter, int x, int y, int width, int height);
     ~TNinePatch();
     QRect GetContentArea(int widht, int height);
@@ -92,9 +91,4 @@ class ExceptionNot9Patch : public NinePatchException
         return ("It is not nine patch image");
     }
 };
-
-
-
-
-#endif // NINEPATCH
 
