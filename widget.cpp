@@ -9,7 +9,8 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Directory"),
                                                       "", "*.9.png");
-    ninepatch = new TNinePatch(fileName);
+    img = QImage(fileName);
+    ninepatch = new TNinePatch(img);
 }
 
 Widget::~Widget()
@@ -20,10 +21,13 @@ Widget::~Widget()
 void Widget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
+    QImage* img = new QImage("D:/wdjall/wdjmaster/data/images/navigation/crew.9.png");
+    painter.drawImage(0,0, *img,0,0, img->width(), img->height());
     try {
-        ninepatch->draw(painter, 10, 10, 300, 270);
+        ninepatch->Draw(painter, 20, 20, 107, 200);
     } catch (NinePatchException* e) {
         std::cerr << e->what() << std::endl;
         delete e;
     }
+    //delete img;
 }
