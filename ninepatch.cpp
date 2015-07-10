@@ -1,5 +1,6 @@
 #include "ninepatch.h"
 #include <QRect>
+#include <iostream>
 
 TNinePatch::TNinePatch(QImage& image)
     : Image(image)
@@ -14,151 +15,24 @@ TNinePatch::TNinePatch(QImage& image)
 TNinePatch::~TNinePatch() {
 }
 
-void TNinePatch::Draw(QPainter& painter, int  X, int  Y, int  WIDTH, int  HEIGHT) {
-       if (WIDTH < (Image.width() - 2) && HEIGHT < (Image.height() - 2)) {
+void TNinePatch::Draw(QPainter& painter, int  x, int  y, int  width, int  height) {
+       if (width < (Image.width() - 2) && height < (Image.height() - 2)) {
            throw new ExceptionIncorrectWidthAndHeight(Image.width() - 2 , Image.height() - 2 );
        }
-       if (WIDTH < (Image.width() - 2)) {
+       if (width < (Image.width() - 2)) {
             throw new ExceptionIncorrectWidth(Image.width() - 2 , Image.height() - 2 );
        }
-       if (HEIGHT < (Image.height() - 2)) {
+       if (height < (Image.height() - 2)) {
             throw new ExceptionIncorrectHeight(Image.width() - 2 , Image.height() - 2 );
        }
-
-       int topResize = WIDTH - (Image.width() - 2);
-       int leftResize = HEIGHT - (Image.height() - 2);
-       double factorX = 0.0;
-       double factorY = 0.0;
-       for (int i = 0; i < ResizeDistancesX.size(); i++) {
-           topResize += ResizeDistancesX[i].second;
-           factorX += ResizeDistancesX[i].second;
+       if (width == old_widht && height == old_height) {
+           painter.drawImage(x, y, NewImage);
+       } else {
+           old_widht = width;
+           old_height = height;
+           GetNewImage(width, height);
+           painter.drawImage(x, y, NewImage);
        }
-       for (int i = 0; i < ResizeDistancesY.size(); i++) {
-           leftResize += ResizeDistancesY[i].second;
-           factorY += ResizeDistancesY[i].second;
-       }
-       factorX = (float)topResize / factorX;
-       factorY = (float)leftResize / factorY;
-       double lostX = 0.0;
-       double lostY = 0.0;
-       int x1 = 0;
-       int y1 = 0;
-       int width;
-       int height;
-       int resizeX = 0;
-       int resizeY = 0;
-       int offsetX = 0;
-       int offsetY = 0;
-       for (int  i = 0; i < ResizeDistancesX.size(); i++) {
-           y1 = 0;
-           offsetY = 0;
-           lostY = 0.0;
-           for (int  j = 0; j < ResizeDistancesY.size(); j++) {
-               width = ResizeDistancesX[i].first - x1;
-               height = ResizeDistancesY[j].first - y1;
-
-               DrawConstPart(QRect(x1 + 1, y1 + 1, width, height),
-                             QRect(X + x1 + offsetX, Y + y1 + offsetY, width, height), painter);
-
-               int  y2 = ResizeDistancesY[j].first;
-               height = ResizeDistancesY[j].second;
-               resizeY = round((float)height * factorY);
-               lostY += resizeY - ((float)height * factorY);
-               if (fabs(lostY) >= 1.0) {
-                   if (lostY < 0) {
-                       resizeY += 1;
-                       lostY += 1.0;
-                   } else {
-                       resizeY -= 1;
-                       lostY -= 1.0;
-                   }
-               }
-               DrawScaledPart(QRect(x1 + 1, y2 + 1, width, height),
-                              QRect(X + x1 + offsetX, Y + y2 + offsetY, width, resizeY), painter);
-
-               int  x2 = ResizeDistancesX[i].first;
-               width = ResizeDistancesX[i].second;
-               height = ResizeDistancesY[j].first - y1;
-               resizeX = round((float)width * factorX);
-               lostX += resizeX - ((float)width * factorX);
-               if (fabs(lostX) >= 1.0) {
-                   if (lostX < 0) {
-                       resizeX += 1;
-                       lostX += 1.0;
-                   } else {
-                       resizeX -= 1;
-                       lostX -= 1.0;
-                   }
-               }
-               DrawScaledPart(QRect(x2 + 1, y1 + 1, width, height),
-                              QRect(X + x2 + offsetX, Y + y1 + offsetY, resizeX, height), painter);
-
-               height = ResizeDistancesY[j].second;
-               DrawScaledPart(QRect(x2 + 1, y2 + 1, width, height),
-                              QRect(X + x2 + offsetX, Y + y2 + offsetY, resizeX, resizeY), painter);
-
-               y1 = ResizeDistancesY[j].first + ResizeDistancesY[j].second;
-               offsetY += resizeY - ResizeDistancesY[j].second;
-           }
-           x1 = ResizeDistancesX[i].first + ResizeDistancesX[i].second;
-           offsetX += resizeX - ResizeDistancesX[i].second;
-       }
-       int x = ResizeDistancesX[ResizeDistancesX.size() - 1].first + ResizeDistancesX[ResizeDistancesX.size() - 1].second;
-       width = Image.width() - x - 2;
-       int y = 0;
-       lostX = 0.0;
-       lostY = 0.0;
-       offsetY = 0;
-       for (int i = 0; i < ResizeDistancesY.size(); i++) {
-           DrawConstPart(QRect(x + 1, y + 1, width, ResizeDistancesY[i].first - y),
-                          QRect(X + x + offsetX, Y + y + offsetY, width, ResizeDistancesY[i].first - y), painter);
-           y = ResizeDistancesY[i].first;
-           resizeY = round((float)ResizeDistancesY[i].second * factorY);
-           lostY += resizeY - ((float)ResizeDistancesY[i].second * factorY);
-           if (fabs(lostY) >= 1.0) {
-               if (lostY < 0) {
-                   resizeY += 1;
-                   lostY += 1.0;
-               } else {
-                   resizeY -= 1;
-                   lostY -= 1.0;
-               }
-           }
-           DrawScaledPart(QRect(x + 1, y + 1, width, ResizeDistancesY[i].second),
-                          QRect(X + x + offsetX, Y + y + offsetY, width, resizeY), painter);
-           y = ResizeDistancesY[i].first + ResizeDistancesY[i].second;
-           offsetY += resizeY - ResizeDistancesY[i].second;
-       }
-       y = ResizeDistancesY[ResizeDistancesY.size() - 1].first + ResizeDistancesY[ResizeDistancesY.size() - 1].second;
-       height = Image.height() - y - 2;
-       x = 0;
-       offsetX = 0;
-       for (int i = 0; i < ResizeDistancesX.size(); i++) {
-           DrawConstPart(QRect(x + 1, y + 1, ResizeDistancesX[i].first - x, height),
-                         QRect(X + x + offsetX, Y + y + offsetY, ResizeDistancesX[i].first - x, height), painter);
-           x = ResizeDistancesX[i].first;
-           resizeX = round((float)ResizeDistancesX[i].second * factorX);
-           lostX += resizeX - ((float)ResizeDistancesX[i].second * factorX);
-           if (fabs(lostX) >= 1.0) {
-               if (lostX < 0) {
-                   resizeX += 1;
-                   lostX += 1.0;
-               } else {
-                   resizeX -= 1;
-                   lostX += 1.0;
-               }
-           }
-           DrawScaledPart(QRect(x + 1, y + 1, ResizeDistancesX[i].second, height),
-                          QRect(X + x + offsetX, Y + y + offsetY, resizeX, height), painter);
-           x = ResizeDistancesX[i].first + ResizeDistancesX[i].second;
-           offsetX += resizeX - ResizeDistancesX[i].second;
-       }
-       x = ResizeDistancesX[ResizeDistancesX.size() - 1].first + ResizeDistancesX[ResizeDistancesX.size() - 1].second;
-       width = Image.width() - x - 2;
-       y = ResizeDistancesY[ResizeDistancesY.size() - 1].first + ResizeDistancesY[ResizeDistancesY.size() - 1].second;
-       height = Image.height() - y - 2;
-       DrawConstPart(QRect(x + 1, y + 1, width, height),
-                      QRect(X + x + offsetX, Y + y + offsetY, width, height), painter);
 }
 
 QRect TNinePatch::GetContentArea(int  width, int  height) {
@@ -256,6 +130,151 @@ void TNinePatch::GetResizeArea() {
         }
     }
     //
+}
+
+void TNinePatch::GetFactor(size_t width, size_t height, double& factorX, double& factorY) {
+    int topResize = width - (Image.width() - 2);
+    int leftResize = height - (Image.height() - 2);
+    for (int i = 0; i < ResizeDistancesX.size(); i++) {
+        topResize += ResizeDistancesX[i].second;
+        factorX += ResizeDistancesX[i].second;
+    }
+    for (int i = 0; i < ResizeDistancesY.size(); i++) {
+        leftResize += ResizeDistancesY[i].second;
+        factorY += ResizeDistancesY[i].second;
+    }
+    factorX = (double)topResize / factorX;
+    factorY = (double)leftResize / factorY;
+}
+
+void TNinePatch::GetNewImage(int width, int height) {
+    NewImage =  QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+    NewImage.fill(QColor(0,0,0,0));
+    QPainter painter(&NewImage);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    double factorX = 0.0;
+    double factorY = 0.0;
+    GetFactor(width, height, factorX, factorY);
+    double lostX = 0.0;
+    double lostY = 0.0;
+    int x1 = 0;//for image parts X
+    int y1 = 0;//for image parts Y
+    int width_resize;//width for image parts
+    int height_resize;//height for image parts
+    int resizeX = 0;
+    int resizeY = 0;
+    int offsetX = 0;
+    int offsetY = 0;
+    for (int  i = 0; i < ResizeDistancesX.size(); i++) {
+        y1 = 0;
+        offsetY = 0;
+        lostY = 0.0;
+        for (int  j = 0; j < ResizeDistancesY.size(); j++) {
+            width_resize = ResizeDistancesX[i].first - x1;
+            height_resize = ResizeDistancesY[j].first - y1;
+
+            DrawConstPart(QRect(x1 + 1, y1 + 1, width_resize, height_resize),
+                          QRect(x1 + offsetX, y1 + offsetY, width_resize, height_resize), painter);
+
+            int  y2 = ResizeDistancesY[j].first;
+            height_resize = ResizeDistancesY[j].second;
+            resizeY = round((double)height_resize * factorY);
+            lostY += resizeY - ((double)height_resize * factorY);
+            if (fabs(lostY) >= 1.0) {
+                if (lostY < 0) {
+                    resizeY += 1;
+                    lostY += 1.0;
+                } else {
+                    resizeY -= 1;
+                    lostY -= 1.0;
+                }
+            }
+            DrawScaledPart(QRect(x1 + 1, y2 + 1, width_resize, height_resize),
+                           QRect(x1 + offsetX, y2 + offsetY, width_resize, resizeY), painter);
+
+            int  x2 = ResizeDistancesX[i].first;
+            width_resize = ResizeDistancesX[i].second;
+            height_resize = ResizeDistancesY[j].first - y1;
+            resizeX = round((double)width_resize * factorX);
+            lostX += resizeX - ((double)width_resize * factorX);
+            if (fabs(lostX) >= 1.0) {
+                if (lostX < 0) {
+                    resizeX += 1;
+                    lostX += 1.0;
+                } else {
+                    resizeX -= 1;
+                    lostX -= 1.0;
+                }
+            }
+            DrawScaledPart(QRect(x2 + 1, y1 + 1, width_resize, height_resize),
+                           QRect(x2 + offsetX, y1 + offsetY, resizeX, height_resize), painter);
+
+            height_resize = ResizeDistancesY[j].second;
+            DrawScaledPart(QRect(x2 + 1, y2 + 1, width_resize, height_resize),
+                           QRect(x2 + offsetX, y2 + offsetY, resizeX, resizeY), painter);
+
+            y1 = ResizeDistancesY[j].first + ResizeDistancesY[j].second;
+            offsetY += resizeY - ResizeDistancesY[j].second;
+        }
+        x1 = ResizeDistancesX[i].first + ResizeDistancesX[i].second;
+        offsetX += resizeX - ResizeDistancesX[i].second;
+    }
+    x1 = ResizeDistancesX[ResizeDistancesX.size() - 1].first + ResizeDistancesX[ResizeDistancesX.size() - 1].second;
+    width_resize = Image.width() - x1 - 2;
+    y1 = 0;
+    lostX = 0.0;
+    lostY = 0.0;
+    offsetY = 0;
+    for (int i = 0; i < ResizeDistancesY.size(); i++) {
+        DrawConstPart(QRect(x1 + 1, y1 + 1, width_resize, ResizeDistancesY[i].first - y1),
+                      QRect(x1 + offsetX, y1 + offsetY, width_resize, ResizeDistancesY[i].first - y1), painter);
+        y1 = ResizeDistancesY[i].first;
+        resizeY = round((double)ResizeDistancesY[i].second * factorY);
+        lostY += resizeY - ((double)ResizeDistancesY[i].second * factorY);
+        if (fabs(lostY) >= 1.0) {
+            if (lostY < 0) {
+                resizeY += 1;
+                lostY += 1.0;
+            } else {
+                resizeY -= 1;
+                lostY -= 1.0;
+            }
+        }
+        DrawScaledPart(QRect(x1 + 1, y1 + 1, width_resize, ResizeDistancesY[i].second),
+                       QRect(x1 + offsetX, y1 + offsetY, width_resize, resizeY), painter);
+        y1 = ResizeDistancesY[i].first + ResizeDistancesY[i].second;
+        offsetY += resizeY - ResizeDistancesY[i].second;
+    }
+    y1 = ResizeDistancesY[ResizeDistancesY.size() - 1].first + ResizeDistancesY[ResizeDistancesY.size() - 1].second;
+    height_resize = Image.height() - y1 - 2;
+    x1 = 0;
+    offsetX = 0;
+    for (int i = 0; i < ResizeDistancesX.size(); i++) {
+        DrawConstPart(QRect(x1 + 1, y1 + 1, ResizeDistancesX[i].first - x1, height_resize),
+                      QRect(x1 + offsetX, y1 + offsetY, ResizeDistancesX[i].first - x1, height_resize), painter);
+        x1 = ResizeDistancesX[i].first;
+        resizeX = round((double)ResizeDistancesX[i].second * factorX);
+        lostX += resizeX - ((double)ResizeDistancesX[i].second * factorX);
+        if (fabs(lostX) >= 1.0) {
+            if (lostX < 0) {
+                resizeX += 1;
+                lostX += 1.0;
+            } else {
+                resizeX -= 1;
+                lostX += 1.0;
+            }
+        }
+        DrawScaledPart(QRect(x1 + 1, y1 + 1, ResizeDistancesX[i].second, height_resize),
+                       QRect(x1 + offsetX, y1 + offsetY, resizeX, height_resize), painter);
+        x1 = ResizeDistancesX[i].first + ResizeDistancesX[i].second;
+        offsetX += resizeX - ResizeDistancesX[i].second;
+    }
+    x1 = ResizeDistancesX[ResizeDistancesX.size() - 1].first + ResizeDistancesX[ResizeDistancesX.size() - 1].second;
+    width_resize = Image.width() - x1 - 2;
+    y1 = ResizeDistancesY[ResizeDistancesY.size() - 1].first + ResizeDistancesY[ResizeDistancesY.size() - 1].second;
+    height_resize = Image.height() - y1 - 2;
+    DrawConstPart(QRect(x1 + 1, y1 + 1, width_resize, height_resize),
+                  QRect(x1 + offsetX, y1 + offsetY, width_resize, height_resize), painter);
 }
 
 

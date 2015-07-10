@@ -15,6 +15,8 @@ public:
 private:
     QRect GetContentArea();
     void GetResizeArea();
+    void GetFactor(size_t width, size_t height, double& factorX, double& factorY);
+    void GetNewImage(int width, int height);
     void DrawScaledPart(QRect oldRect, QRect newRect, QPainter& painter);
     void DrawConstPart(QRect oldRect, QRect newRect, QPainter& painter);
 public:
@@ -22,6 +24,9 @@ public:
     QRect NewContentArea;
 
 private:
+    int old_widht = -1;
+    int old_height = -1;
+    QImage NewImage;
     QVector<std::pair< int, int >>ResizeDistancesY;
     QVector<std::pair< int, int >>ResizeDistancesX;
     QRect ContentArea;
