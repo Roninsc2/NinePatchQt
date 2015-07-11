@@ -41,8 +41,8 @@ QRect TNinePatch::GetContentArea(int  width, int  height) {
 }
 
 void TNinePatch::DrawScaledPart(QRect oldRect, QRect newRect, QPainter& painter) {
-    QImage img = Image.copy(oldRect);
     if (newRect.width() && newRect.height()) {
+        QImage img = Image.copy(oldRect);
         img = img.scaled(newRect.width(), newRect.height());
         painter.drawImage(newRect.x(), newRect.y(), img, 0, 0, newRect.width(), newRect.height());
     }
