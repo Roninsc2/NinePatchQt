@@ -8,15 +8,14 @@
 class TNinePatch {
 public:
     TNinePatch(QImage& image);
-    void Draw(QPainter& painter, int X, int Y, int WIDTH, int HEIGHT);
+    void Draw(QPainter& painter, int x, int y, int width, int height);
     ~TNinePatch();
-    QRect GetContentArea(int  widht, int  height);
-
 private:
     QRect GetContentArea();
+    QRect GetContentArea(int  widht, int  height);
     void GetResizeArea();
-    void GetFactor(size_t width, size_t height, double& factorX, double& factorY);
-    void GetNewImage(int width, int height);
+    void GetFactor(int width, int height, double& factorX, double& factorY);
+    void UpdateCachedImage(int width, int height);
     void DrawScaledPart(QRect oldRect, QRect newRect, QPainter& painter);
     void DrawConstPart(QRect oldRect, QRect newRect, QPainter& painter);
 public:
@@ -24,9 +23,9 @@ public:
     QRect NewContentArea;
 
 private:
-    int old_widht = -1;
-    int old_height = -1;
-    QImage NewImage;
+    int OldWidth = -1;
+    int OldHeight = -1;
+    QImage CachedImage;
     QVector<std::pair< int, int >>ResizeDistancesY;
     QVector<std::pair< int, int >>ResizeDistancesX;
     QRect ContentArea;
