@@ -20,7 +20,6 @@ public:
     ~Widget();
 
 private:
-    QImage img;
     TNinePatch * ninepatch;
     void paintEvent(QPaintEvent*);
     QScopedPointer<Ui::Widget> ui;

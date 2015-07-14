@@ -9,8 +9,7 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Directory"),
                                                       "", "*.9.png");
-    img = QImage(fileName);
-    ninepatch = new TNinePatch(img);
+    ninepatch = new TNinePatch(fileName);
 }
 
 Widget::~Widget()
@@ -22,7 +21,8 @@ void Widget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     try {
-        ninepatch->Draw(painter, 20, 20, 107, 200);
+        ninepatch->SetImageSize(107,200);
+        ninepatch->Draw(painter, 20, 20);
     } catch (NinePatchException* e) {
         std::cerr << e->what() << std::endl;
         delete e;

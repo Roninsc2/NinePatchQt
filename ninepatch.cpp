@@ -2,8 +2,8 @@
 #include <QRect>
 #include <iostream>
 
-TNinePatch::TNinePatch(QImage& image)
-    : Image(image)
+TNinePatch::TNinePatch(const QString& fileName)
+    : Image(QImage(fileName))
 {
     ContentArea = GetContentArea();
     GetResizeArea();
@@ -15,25 +15,25 @@ TNinePatch::TNinePatch(QImage& image)
 TNinePatch::~TNinePatch() {
 }
 
-void TNinePatch::Draw(QPainter& painter, int  x, int  y, int  width, int  height) {
-       if (width < (Image.width() - 2) && height < (Image.height() - 2)) {
-           throw new ExceptionIncorrectWidthAndHeight(Image.width() - 2 , Image.height() - 2 );
-       }
-       if (width < (Image.width() - 2)) {
-            throw new ExceptionIncorrectWidth(Image.width() - 2 , Image.height() - 2 );
-       }
-       if (height < (Image.height() - 2)) {
-            throw new ExceptionIncorrectHeight(Image.width() - 2 , Image.height() - 2 );
-       }
-       if (width == OldWidth && height == OldHeight) {
-           painter.drawImage(x, y, CachedImage);
-       } else {
-           OldWidth = width;
-           OldHeight = height;
-           UpdateCachedImage(width, height);
-           painter.drawImage(x, y, CachedImage);
-           NewContentArea = GetContentArea(width, height);
-       }
+void TNinePatch::Draw(QPainter& painter, int  x, int  y) {
+    painter.drawImage(x, y, CachedImage);
+}
+
+void TNinePatch::SetImageSize(int width, int height) {
+    if (width < (Image.width() - 2) && height < (Image.height() - 2)) {
+        throw new ExceptionIncorrectWidthAndHeight(Image.width() - 2 , Image.height() - 2 );
+    }
+    if (width < (Image.width() - 2)) {
+         throw new ExceptionIncorrectWidth(Image.width() - 2 , Image.height() - 2 );
+    }
+    if (height < (Image.height() - 2)) {
+         throw new ExceptionIncorrectHeight(Image.width() - 2 , Image.height() - 2 );
+    }
+    if (width != OldWidth && height != OldHeight) {
+        OldWidth = width;
+        OldHeight = height;
+        UpdateCachedImage(width, height);
+    }
 }
 
 QRect TNinePatch::GetContentArea(int  width, int  height) {
