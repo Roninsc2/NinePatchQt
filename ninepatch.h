@@ -12,9 +12,9 @@ public:
     void Draw(QPainter& painter, int x, int y);
     void SetImageSize(int width, int height);
     ~TNinePatch();
+    QRect GetContentArea(int  widht, int  height);
 private:
     QRect GetContentArea();
-    QRect GetContentArea(int  widht, int  height);
     void GetResizeArea();
     void GetFactor(int width, int height, double& factorX, double& factorY);
     void UpdateCachedImage(int width, int height);

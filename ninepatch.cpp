@@ -37,7 +37,7 @@ void TNinePatch::SetImageSize(int width, int height) {
      if (height < (Image.height() - 2 - resizeHeight)) {
          throw new ExceptionIncorrectHeight(Image.width() - 2 , Image.height() - 2 );
     }
-    if (width != OldWidth && height != OldHeight) {
+    if (width != OldWidth || height != OldHeight) {
         OldWidth = width;
         OldHeight = height;
         UpdateCachedImage(width, height);
