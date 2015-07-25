@@ -20,13 +20,21 @@ void TNinePatch::Draw(QPainter& painter, int  x, int  y) {
 }
 
 void TNinePatch::SetImageSize(int width, int height) {
-    if (width < (Image.width() - 2) && height < (Image.height() - 2)) {
+    int resizeWidth = 0;
+    int resizeHeight = 0;
+    for (int i = 0; i < ResizeDistancesX.size(); i++) {
+          resizeWidth += ResizeDistancesX[i].second;
+    }
+    for (int i = 0; i < ResizeDistancesY.size(); i++) {
+          resizeHeight += ResizeDistancesY[i].second;
+    }
+    if (width < (Image.width() - 2 - resizeWidth) && height < (Image.height() - 2 - resizeHeight)) {
         throw new ExceptionIncorrectWidthAndHeight(Image.width() - 2 , Image.height() - 2 );
     }
-    if (width < (Image.width() - 2)) {
-         throw new ExceptionIncorrectWidth(Image.width() - 2 , Image.height() - 2 );
+    if (width < (Image.width() - 2 - resizeWidth)) {
+          throw new ExceptionIncorrectWidth(Image.width() - 2 , Image.height() - 2 );
     }
-    if (height < (Image.height() - 2)) {
+     if (height < (Image.height() - 2 - resizeHeight)) {
          throw new ExceptionIncorrectHeight(Image.width() - 2 , Image.height() - 2 );
     }
     if (width != OldWidth && height != OldHeight) {
