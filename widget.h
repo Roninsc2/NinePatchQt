@@ -23,6 +23,7 @@ private:
     TNinePatch * ninepatch;
     void paintEvent(QPaintEvent*);
     QScopedPointer<Ui::Widget> ui;
+    QImage image;
 };
 
 #endif // WIDGET_H

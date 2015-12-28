@@ -1,9 +1,8 @@
 #include "ninepatch.h"
 #include <QRect>
-#include <iostream>
 
-TNinePatch::TNinePatch(const QString& fileName)
-    : Image(QImage(fileName))
+TNinePatch::TNinePatch(QImage& image)
+    : Image(image)
 {
     ContentArea = GetContentArea();
     GetResizeArea();

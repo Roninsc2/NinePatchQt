@@ -8,7 +8,7 @@
 
 class TNinePatch {
 public:
-    TNinePatch(const QString& fileName);
+    TNinePatch(QImage& image);
     void Draw(QPainter& painter, int x, int y);
     void SetImageSize(int width, int height);
     ~TNinePatch();
@@ -21,7 +21,7 @@ private:
     void DrawScaledPart(QRect oldRect, QRect newRect, QPainter& painter);
     void DrawConstPart(QRect oldRect, QRect newRect, QPainter& painter);
 public:
-    QImage Image;
+    QImage& Image;
 private:
     int OldWidth = -1;
     int OldHeight = -1;
