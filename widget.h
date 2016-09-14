@@ -22,7 +22,7 @@ public:
 private:
     TNinePatch * ninepatch;
     void paintEvent(QPaintEvent*);
-    QScopedPointer<Ui::Widget> ui;
+    QSharedPointer<Ui::Widget> ui;
     QImage image;
 };
 
